@@ -1,16 +1,12 @@
 var mysql = require('mysql')
 
-var client = createPool({
-    database: "aa"
-})
-
-
-
-
-// createTable(client,newTable)
+// 创建连接池
+// var client = createPool({
+//     database: "aa"
+// })
 
 function createPool(para) {
-    var a = mysql.createPool({
+    return mysql.createPool({
 
         'user': para.user || 'root',
         'password': para.password || 'root',
@@ -18,11 +14,10 @@ function createPool(para) {
         'host': para.host || 'localhost',
         'port': para.port || 3306
     });
-
-    return a
 }
 
-// // 创建表 exampe：
+// createTable(client,newTable)
+// // 创建表 
 // // para = {
 //     'tableName':'student',
 //     'col':{
@@ -50,14 +45,14 @@ function createTable(pool, para) {
     if (para.primary) {
         sqlSent += ' PRIMARY KEY (' + para.primary + ")"
     }
-    if(para.unique) {
-        sqlSent+= " " + "UNIQUE ("+para.unique.join(",")+")"
+    if (para.unique) {
+        sqlSent += " " + "UNIQUE (" + para.unique.join(",") + ")"
     }
-    if(para.foreign&&para.refer) {
+    if (para.foreign && para.refer) {
         sqlSent += ' FOREIGN KEY (' + para.foreign + ") REFERENCES " + para.refer
     }
-    if(para.check) {
-        sqlSent+='CHECK ('+para.check+")"
+    if (para.check) {
+        sqlSent += 'CHECK (' + para.check + ")"
     }
     sqlSent += ")"
     console.log(sqlSent)
@@ -66,12 +61,14 @@ function createTable(pool, para) {
             connection.query(
                 sqlSent
             );
+            connection.release()
         }
     );
 }
 
+
 // 直接执行语句
-function doSql(pool, sqlSent) {
+function doSql(pool, sqlSent, callback) {
     if (sqlSent) {
         pool.getConnection(
             function(err, connection) {
@@ -79,82 +76,84 @@ function doSql(pool, sqlSent) {
                     throw err;
                 }
                 connection.query(
-                    sqlSent
+                    sqlSent,
+                    function(err, results) {
+                        if (callback && callback instanceof Function) {
+                            callback(results)
+                        }
+                    }
                 );
+
+                connection.release()
             }
         )
     };
 }
 
 
-function createDB(pool, DBName) {
-    if(!DBName){
-    console.log('has not databaseName')
-    return
+
+function TableUse(pool, tableName) {
+    if (pool && tableName) {
+        this.pool = pool;
+        this.tableName = tableName;
+    } else {
+        console.log('parameter false')
+        return false
+    }
 }
-    pool.getConnection(
+
+TableUse.prototype = {
+    alterTable: alterTable,
+    insertData: insertData,
+    updateData: updateData,
+    showCol: showCol,
+    delData: delData,
+    getData: getData,
+    getDataByID:getDataByID
+}
+
+function alterTable(para, callback) {
+
+    var sqlSent = 'ALTER TABLE ' + this.tableName + " ";
+    sqlSent += para.manner + " ";
+    if (para.manner !== 'add') {
+        sqlSent += "COLUMN "
+    }
+    sqlSent += para.col + " ";
+    if (para.manner == "change") {
+        sqlSent += para.col + " "
+    }
+    if (para.manner !== "drop") {
+        sqlSent += para.dataType
+    }
+    console.log(sqlSent)
+    this.pool.getConnection(
         function(err, connection) {
-            connection.query('CREATE DATABASE ' + DBName, function(err) {
-                if (err && err.number != Client.ERROR_DB_CREATE_EXISTS) {
+            connection.query(sqlSent, function(err, results) {
+                if (err) {
                     throw err;
                 }
+                if (callback && callback instanceof Function) {
+                    callback(results);
+                }
             });
+            connection.release()
         }
     );
 }
 
 
+function insertData(para, callback) {
 
-function useDB(pool, DBName) {
-
-if(!DBName){
-    console.log('has not databaseName')
-    return
-}
-
-
-    pool.getConnection(
-        function(err, connection) {
-            connection.query('USE ' + DBName, function(err, results) {
-                
-            });
-        }
-    );
-}
-
-
-// useDB(client, 'aa')
-
-
-// insertData(client, {
-//     "tableName": "student",
-//     "col": {
-//         "id":16,
-//         "age":10,
-//         "sex": 1,
-//         "height": 170,
-//         'name': 'dad',
-//         'weight': 140
-//     }
-// })
-function insertData(pool, para) {
-
-
-if(!para.tableName){
-    console.log('has not tableName')
-    return
-}
-
-
-    var sqlSent = 'INSERT INTO ' + para.tableName + ' ('
+    var sqlSent = 'INSERT INTO ' + this.tableName + ' ('
     var value = [];
     var keyName = []
-    for (var key in para.col) {
+    for (var key in para) {
         keyName.push(key)
-        if ((typeof para.col[key]) === 'string') {
-            value.push("'" + para.col[key] + "'")
+        if ((typeof para[key]) === 'string') {
+            value.push("'" + para[key] + "'")
         } else {
-            value.push(para.col[key])
+            value.push(para[key])
         }
 
     }
@@ -162,36 +161,28 @@ if(!para.tableName){
     value = value.join(', ')
     sqlSent = sqlSent + keyName + ') ' + 'VALUES (' + value + ')'
     console.log(sqlSent)
-    pool.getConnection(
+    this.pool.getConnection(
         function(err, connection) {
             connection.query(
                 sqlSent,
-                function(err) {
+                function(err, results) {
                     console.log(err)
+                    if (callback && callback instanceof Function) {
+                        callback(results);
+                    }
                 }
             );
+            connection.release()
+
         }
     );
 
 }
 
-
-// updateData(client,{tableName:'student',col:{
-//     name:'fasasdfdf',
-//     weight:123
-
-// },
-// condition:'id=13'})
-
-function updateData(pool, para) {
-
-if(!para.tableName){
-    console.log('has not tableName')
-    return
-}
+function updateData(para, callback) {
 
 
-    var sqlSent = 'UPDATE ' + para.tableName + ' SET ';
+    var sqlSent = 'UPDATE ' + this.tableName + ' SET ';
     var keyValue = [];
 
     for (var key in para.col) {
@@ -209,29 +200,28 @@ if(!para.tableName){
         sqlSent += ' WHERE ' + para.condition
     }
     console.log(sqlSent)
-    pool.getConnection(
+    this.pool.getConnection(
         function(err, connection) {
             connection.query(
                 sqlSent,
-                function(err) {
+                function(err, results) {
                     console.log(err)
+                    if (callback && callback instanceof Function) {
+                        callback(results);
+                    }
                 }
             )
+            connection.release()
         })
 }
 
-function showCol(pool, tableName) {
 
-if(!tableName){
-    console.log('has not tableName')
-    return
-}
-
-
-    pool.getConnection(
+function showCol() {
+    var that = this
+    this.pool.getConnection(
         function(err, connection) {
             connection.query(
-                'SHOW COLUMNS FROM ' + tableName,
+                'SHOW COLUMNS FROM ' + that.tableName,
                 function(err, results) {
                     if (err) {
                         throw err
@@ -241,32 +231,18 @@ if(!tableName){
                     return results
 
                 })
+
         })
 }
 
-// showCol(client,'student')
-// 
-// 
+function delData(condition, callback) {
 
-// delData(client,{
-//     tableName:'student',
-//     condition:'id = 11'
-// })
-
-function delData(pool, para) {
-
-if(!para.tableName){
-    console.log('has not tableName')
-    return
-}
-
-
-    var sqlSent = 'DELETE FROM ' + para.tableName
-    if (para.condition) {
-        sqlSent += ' WHERE ' + para.condition
+    var sqlSent = 'DELETE FROM ' + this.tableName
+    if (condition) {
+        sqlSent += ' WHERE ' + condition
     }
 
-    pool.getConnection(
+    this.pool.getConnection(
         function(err, connection) {
             connection.query(
                 sqlSent,
@@ -275,45 +251,34 @@ if(!para.tableName){
                         console.log(err)
                         throw err
                     }
+                    if (callback && callback instanceof Function) {
+                        callback(results);
+                    }
                     console.log(results)
                 }
             )
+            connection.release()
         })
 }
 
+function getData(para, callback) {
+    // 直接输入where条件语句的情况
+    if (typeof para === "string") {
+        sqlSent = 'SELECT * FROM ' + this.tableName + ' WHERE ' + para
 
-
-
-// var b =getData(client,{tableName:"student",col:["id"],order:'height',condition:" age in (10,13)"},function(results){
-//    console.log(results)
-//    return results
-// })
-
-
-// para {
-// tableName:"student"
-// col:["id","age"]
-// condition:"id>5"
-// order:'age'
-// }
-function getData(pool, para, callback) {
-
-if(!para.tableName){
-    console.log('has not tableName')
-    return
-}
-
-
-    var col = para.col?para.col.join(','):'*'
-    var sqlSent = 'SELECT ' + col + " FROM " + para.tableName
-    if (para.condition) {
-        sqlSent += ' WHERE ' + para.condition
-    }
-    if (para.order) {
-        sqlSent += ' ORDER BY ' + para.order
+    } else {
+        var col = para.col ? para.col.join(',') : '*'
+        var sqlSent = 'SELECT ' + col + " FROM " + this.tableName
+        if (para.condition) {
+            sqlSent += ' WHERE ' + para.condition
+        }
+        if (para.order) {
+            sqlSent += ' ORDER BY ' + para.order
+        }
     }
 
-    pool.getConnection(
+    console.log(sqlSent)
+    this.pool.getConnection(
         function(err, connection) {
             connection.query(sqlSent, function(err, results, fields) {
                 if (err) {
@@ -322,26 +287,38 @@ if(!para.tableName){
                 if (callback && callback instanceof Function) {
                     callback(results);
                 }
+                connection.release()
             })
+
+        }
+    );
+}
+
+
+function getDataByID(para, callback) {
+    sqlSent = 'SELECT * FROM ' + this.tableName + ' WHERE id=' + para
+    console.log(sqlSent)
+    this.pool.getConnection(
+        function(err, connection) {
+            connection.query(sqlSent, function(err, results, fields) {
+                if (err) {
+                    throw err;
+                };
+                if (callback && callback instanceof Function) {
+                    callback(results);
+                }
+                connection.release()
+            })
+
         }
     );
 }
 
 
 
-
-
-
-
 module.exports = {
+    doSql: doSql,
     createPool: createPool,
     createTable: createTable,
-    doSql: doSql,
-    createDB: createDB,
-    useDB: useDB,
-    insertData: insertData,
-    updateData: updateData,
-    delData: delData,
-    getData: getData,
-    showCol: showCol
+    TableUse: TableUse
 }
