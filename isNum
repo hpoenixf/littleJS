@@ -1,0 +1,8 @@
+function IsNum(s)
+{
+    if (s!=null && s!="")
+    {
+        return !isNaN(''+s);
+    }
+    return false;
+}
