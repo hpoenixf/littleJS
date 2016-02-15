@@ -1,8 +1,3 @@
-function IsNum(s)
-{
-    if (s!=null && s!="")
-    {
-        return !isNaN(''+s);
-    }
-    return false;
+function  isNum(number) {
+    return number!==''&&!isNaN(''+number)
 }
