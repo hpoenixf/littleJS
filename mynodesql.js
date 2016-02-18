@@ -315,6 +315,46 @@ function getDataByID(para, callback) {
 }
 
 
+// mysql存储数组  思路，先将数组转换成字符串，用*号区分。取出时用*号分割。插入数组使用concat，删除数组时使用replace （ ，"")
+
+
+
+
+function deleteTag(para, callback) {
+    var special = [];
+    special[0] = " = replace(patent,";
+    special[1] = "'')"
+    tagData.updateData({
+        keyName: ["patent"],
+        value: [para.patentID + "*"],
+        special: special,
+        condition: ['id= ' + para.tagID]
+    }, function (e) {
+        if (callback && callback instanceof Function) {
+            callback(e)
+        }
+    })
+}
+
+
+function addTag(para, callback) {
+    tagData.addData({
+        keyName: ["patent"],
+        value: [para.patentID + "*"],
+        condition: ['id= ' + para.tagID]
+    }, function (e) {
+        if (callback && callback instanceof Function) {
+            callback(e)
+        }
+    })
+}
+
+
+
+
+
+
+
 
 module.exports = {
     doSql: doSql,
