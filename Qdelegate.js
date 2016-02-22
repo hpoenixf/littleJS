@@ -20,6 +20,7 @@ onObj.prototype.on = function(eve, selector, fn) {
     } else {
         els = document.querySelectorAll(selector)
     }
+    var matched;
     for (var j = 0; j < el.length; j++) {
         el[j].addEventListener(eve, function(e) {
             for (var i = 0; i < els.length; i++) {
