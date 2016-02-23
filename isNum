@@ -3,6 +3,12 @@ function  isNum(number) {
 }
 
 
+
+function isNum2(num) {
+	return  num==='0'||num===0||num&&''.split.call(num)[0].match( /^\d*$/g)?true:false
+}
+
+
 function isObject(obj) {
     return obj !== null && typeof(obj) === 'object'
 }
