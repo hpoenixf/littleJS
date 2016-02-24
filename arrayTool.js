@@ -22,7 +22,7 @@ function uniq(arr) {
     'use strict'
     const obj = {}
     arr.forEach(function(i) {
-        if (obj[i]==='undefined') { obj[i] = i }
+        if (obj[i]===undefined) { obj[i] = i }
     })
     return Object.keys(obj).map(j=>Number(j))
 }
