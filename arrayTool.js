@@ -17,12 +17,12 @@ function uniqArr(arr) {
     }
 }
 
+//利用对象属性的哈希特性
 function uniq(arr) {
-  var hash = {};
-  var newA = [];
-	for(var i = 0; i < arr.length; i++) {
-	hash[arr[i]] == undefined && (hash[arr[i]] = arr[i])
-	};
-	for(var o in hash) {newA.push(o)} 
-	return newA
+    'use strict'
+    const obj = {}
+    arr.forEach(function(i) {
+        if (obj[i]==='undefined') { obj[i] = i }
+    })
+    return Object.keys(obj).map(j=>Number(j))
 }
