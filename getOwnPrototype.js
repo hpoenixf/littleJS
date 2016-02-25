@@ -10,3 +10,5 @@ function getOwnProperty(obj) {
     }
     return [proName,proValue]
 }
+
+console.log(getOwnProperty({tom:'sdaf',bob:'fasdf'}))
