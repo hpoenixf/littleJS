@@ -2,8 +2,17 @@
 
 
 function $q(selector) {
-    var el = document.querySelectorAll(selector)
-    return new onObj(el)
+    // 使用全局变量来保存获取的对象。
+    if(window.$qObj===undefined){
+        window.$qObj ={}
+    }
+    //将选择器替换为可用的变量名，按需要再扩展，已经匹配 '#' '.' ' ' '+'  ':''
+    var sel2pro = selector.replace(/\#/g, "$ID").replace(/\./g, "$CL").replace(/\s/g, "$SS").replace(/\+/g, "$AD").replace(/\:/g, "$CO")
+    if (window.$qObj[sel2pro]===undefined) {
+        var el = document.querySelectorAll(selector)
+        window.$qObj[sel2pro] = new onObj(el)
+    }
+    return window.$qObj[sel2pro]
 
     function onObj(el) {
         this.el = el
@@ -55,14 +64,8 @@ function $q(selector) {
 
 
 
-
 //example
-//不接触的话，可以使用匿名函数，可以链式绑定
 //$q('#ntp-contents').on('click', 'div', fn)
-//如果要解除事件代理，不能绑定匿名函数，不能链式绑定，之后再接触
-// var  a  = $q('#ntp-contents')
-// a.on('click', 'div', fn)
-//a.off('click', 'div', fn)
-//
-// 不支持这样
-// $q('#ntp-contents').off('click', fn)
+//可以使用匿名函数，可以链式绑定
+//如果要解除事件代理，不能绑定匿名函数
+
