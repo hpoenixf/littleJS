@@ -1,6 +1,4 @@
 //inspired by oui-dom-events https://github.com/oneuijs/oui-dom-events/blob/master/src/index.js
-
-
 function $q(selector) {
     // 使用全局变量来保存获取的对象。
     if(window.$qObj===undefined){
