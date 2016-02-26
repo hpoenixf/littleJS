@@ -30,4 +30,6 @@
 自己写的关于mysql和nodejs交互的工具，免去拼sql的痛苦。
 
 ###Qdelegate
-事件代理，使用兼容性良好的node.contains而不是事件冒泡。性能更强
+类似jquery的on方法，使用形式为$q(selector).on(event,[selector,],handle),$q(selector).off(event,[selector,],handle)
+事件代理，使用兼容性良好的node.contains方法而不是事件冒泡。性能更强
+支持on,off和once
