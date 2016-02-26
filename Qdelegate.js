@@ -131,7 +131,7 @@ function $q(selector) {
 //可以使用匿名函数，可以链式绑定
 //如果要解除事件代理，不能绑定匿名函数
 //once是只响应一次的事件，严格模式不支持，once事件也可以取消
-
+// fire是触发已经绑定的事件
 //example
 // function con() { console.log(this) }
 
@@ -140,3 +140,5 @@ function $q(selector) {
 // $q('body').on('click', 'div', con)
     // $q('body').once('click', 'div', bon)
     // $q('body').off('click', 'div', bon)
+    // $q('body').fire('click', 'div')
+    // $q('div').off('click')
