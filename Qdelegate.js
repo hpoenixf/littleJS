@@ -38,19 +38,20 @@ function $q(selector) {
             }
             return this
         }
+        // 取消绑定到该元素的事件eve的所有监听事件
         onObj.prototype.offEvent = function(eve) {
             var el = this.el;
-            var index
-            while (true) {
-                index = this.fnName.indexOf(eve)
-                if (index === -1) {
-                    break;
+            var index = 0;
+            while (index < this.fnName.length) {
+                if (this.fnName[index].split("&")[0] === eve) {
+                    for (var j = 0; j < el.length; j++) {
+                        removeEvent(el[j], eve, this.fn[index])
+                    }
+                    this.fn.splice(index, 1)
+                    this.fnName.splice(index, 1)
+                    index--
                 }
-                for (var j = 0; j < el.length; j++) {
-                    removeEvent(el[j], eve, this.fn[index])
-                }
-                this.fn.splice(index, 1)
-                this.fnName.splice(index, 1)
+                index++
             }
             return this
         }
@@ -58,7 +59,6 @@ function $q(selector) {
                 var el = self.el
                 var target = [];
                 if (selector) {
-
                     var sel = document.querySelectorAll(selector);
                     // 同样是使用contains来判断，不使用冒泡,ie8不支持forEach，真坑爹
                     for (var k = 0; k < el.length; k++) {
@@ -151,14 +151,18 @@ function $q(selector) {
 //once是只响应一次的事件，严格模式不支持，once事件也可以取消
 // fire是触发已经绑定的事件
 //example
-function con() { console.log(this) }
+function con() {
+    console.log(this)
+}
 
-function bon() { console.log(new Date) }
+function bon() {
+    console.log(new Date)
+}
 
-// $q('body').on('click', 'div', con)
+$q('body').on('click', 'div', con)
 // console.log(window.$qObj)
-$q('body').once('click', 'div', bon)
-console.log(window.$qObj)
-    // $q('body').off('click', 'div', bon)
-    // $q('body').fire('click', 'div')
-    // $q('div').off('click')
+// $q('body').once('click', 'div', bon)
+// console.log(window.$qObj)
+// $q('body').off('click', 'div', bon)
+// $q('body').fire('click', 'div')
+// $q('div').off('click')

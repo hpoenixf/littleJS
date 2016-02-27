@@ -12,7 +12,7 @@
 使用形式为$q(selector).on(event[,selector],handle),$q(selector).off(event[,selector],handle)
 使用兼容性良好的node.contains方法而不是事件冒泡。性能更强
 
-目前支持on,off，once，fire。
+目前支持on,off，once，fire，offEvent。
 fire可以触发事件，执行绑定的函数
 可以使用匿名函数，但如果需要解除绑定，则不能绑定匿名函数
 
