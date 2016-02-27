@@ -38,30 +38,48 @@ function $q(selector) {
             }
             return this
         }
+        onObj.prototype.offEvent = function(eve) {
+            var el = this.el;
+            var index
+            while (true) {
+                index = this.fnName.indexOf(eve)
+                if (index === -1) {
+                    break;
+                }
+                for (var j = 0; j < el.length; j++) {
+                    removeEvent(el[j], eve, this.fn[index])
+                }
+                this.fn.splice(index, 1)
+                this.fnName.splice(index, 1)
+            }
+            return this
+        }
         onObj.prototype.fire = function(eve, selector) {
-            var el = self.el
-            var target = [];
-            if (selector) {
-                
-                var sel = document.querySelectorAll(selector);
-                // 同样是使用contains来判断，不使用冒泡,ie8不支持forEach，真坑爹
-                for (var k = 0; k < el.length; k++) {
-                    for (var j = 0; j < sel.length; j++) {
-                        if (el[k].contains(sel[j])) {
-                            target.push(sel[j])
+                var el = self.el
+                var target = [];
+                if (selector) {
+
+                    var sel = document.querySelectorAll(selector);
+                    // 同样是使用contains来判断，不使用冒泡,ie8不支持forEach，真坑爹
+                    for (var k = 0; k < el.length; k++) {
+                        for (var j = 0; j < sel.length; j++) {
+                            if (el[k].contains(sel[j])) {
+                                target.push(sel[j])
+                            }
                         }
                     }
+                } else {
+                    target = el
                 }
-            }else {
-                target = el
-            }
-            var evt = document.createEvent("HTMLEvents");
-            evt.initEvent(eve, true, true);
+                var evt = document.createEvent("HTMLEvents");
+                evt.initEvent(eve, true, true);
 
-            for (var i = 0; i < target.length; i++) {
-                target[i].dispatchEvent(evt);
+                for (var i = 0; i < target.length; i++) {
+                    target[i].dispatchEvent(evt);
+                }
             }
-        }
+            // onObj.prototype. = 
+
     }
 
     function addEvent(ele, eve, fn) {
@@ -96,8 +114,8 @@ function $q(selector) {
         var matched;
         this.fnName.push(eve + '&' + fn.name)
         var that = this
-        this.fn.push(function(e) {
-            e = e || window.event
+        this.fn.push(function(event) {
+            e = event || window.event
             target = e.target || e.srcElement
             for (var i = 0; i < els.length; i++) {
                 var _el = els[i]
@@ -133,12 +151,14 @@ function $q(selector) {
 //once是只响应一次的事件，严格模式不支持，once事件也可以取消
 // fire是触发已经绑定的事件
 //example
-// function con() { console.log(this) }
+function con() { console.log(this) }
 
-// function bon() { console.log(new Date) }
+function bon() { console.log(new Date) }
 
 // $q('body').on('click', 'div', con)
-    // $q('body').once('click', 'div', bon)
+// console.log(window.$qObj)
+$q('body').once('click', 'div', bon)
+console.log(window.$qObj)
     // $q('body').off('click', 'div', bon)
     // $q('body').fire('click', 'div')
     // $q('div').off('click')
