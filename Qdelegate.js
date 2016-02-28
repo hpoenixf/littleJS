@@ -16,6 +16,7 @@ function onObj(el) {
     var addEvent;
     var removeEvent;
     // 条件预加载，不用每次执行都进行重复判定————来自《高性能js》p156
+    // 现代浏览器
     if (window.addEventListener) {
         addEvent = function(ele, eve, fn) {
             ele.addEventListener(eve, fn)
@@ -25,7 +26,15 @@ function onObj(el) {
             ele.removeEventListener(eve, fn);
             return this
         }
+        fireEvent = function(target, eve) {
+            var evt = document.createEvent("HTMLEvents");
+            evt.initEvent(eve, true, true);
+            for (var i = 0; i < target.length; i++) {
+                target[i].dispatchEvent(evt);
+            }
+        }
     } else {
+        // 万恶的ie9-
         addEvent = function(ele, eve, fn) {
             ele.attachEvent("on" + eve, fn);
             return this
@@ -33,6 +42,12 @@ function onObj(el) {
         removeEvent = function(ele, eve, fn) {
             ele.detachEvent("on" + eve, fn);
             return this
+        }
+        fireEvent = function(target, eve) {
+            var evt = document.createEventObject();
+            for (var i = 0; i < target.length; i++) {
+                target[i].fireEvent('on' + event, evt)
+            }
         }
     }
     this.el = el
@@ -95,11 +110,8 @@ function onObj(el) {
         } else {
             target = el
         }
-        var evt = document.createEvent("HTMLEvents");
-        evt.initEvent(eve, true, true);
-        for (var i = 0; i < target.length; i++) {
-            target[i].dispatchEvent(evt);
-        }
+
+        fireEvent(target, eve)
         return this
     }
 
@@ -164,8 +176,8 @@ function onObj(el) {
 // }
 
 // $q('body').on('click', 'div', con)
-    // console.log(window.$qObj)
-    // $q('body').once('click', 'div', bon)
-    // $q('body').off('click', 'div', bon)
-    // $q('body').fire('click', 'div')
-    // $q('div').off('click')
+// console.log(window.$qObj)
+// $q('body').once('click', 'div', bon)
+// $q('body').off('click', 'div', bon)
+// $q('body').fire('click', 'div')
+// $q('div').off('click')
