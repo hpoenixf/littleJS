@@ -157,8 +157,6 @@ function onObj(el) {
 }
 
 
-
-
 //可以使用匿名函数，可以链式绑定
 //如果要解除事件代理，不能绑定匿名函数
 //once是只响应一次的事件，严格模式不支持，once事件也可以取消
@@ -170,7 +168,6 @@ function onObj(el) {
 // function con() {
 //     console.log(this)
 // }
-
 // function bon() {
 //     console.log(new Date)
 // }
