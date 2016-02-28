@@ -8,13 +8,18 @@
 
 ##Qdelegate
 
-事件代理类似jquery的on方法。
-使用形式为$q(selector).on(event[,selector],handle),$q(selector).off(event[,selector],handle)
-使用兼容性良好的node.contains方法而不是事件冒泡。性能更强
-
-目前支持on,off，once，fire，offEvent。
-fire可以触发事件，执行绑定的函数
-可以使用匿名函数，但如果需要解除绑定，则不能绑定匿名函数
+#事件代理类似jquery的on方法。
+#使用形式为$q(selector).on(event[,selector],handle),$q(selector).off(event[,selector],handle)
+#使用兼容性良好的node.contains方法而不是事件冒泡。性能更强
+#
+#目前支持on,off，once，fire，offEvent。
+#严格模式下不支持once
+#fire可以触发事件，执行绑定的函数
+#offEvent解除绑定到该事件的所有函数的绑定
+#
+#$q(selector).el 里以数组的形式存储着获取的元素
+#可以使用匿名函数。
+#但如果需要解除匿名函数的绑定，需要以使用a = new onObj(el),a.on(eve,selector,fn)的形式来使用该工具
 
 
 ##arrayTool 

@@ -26,19 +26,19 @@ function $q(selector) {
             return this
         }
         onObj.prototype.off = function(eve, fn) {
-            fn = !(fn instanceof Function) && arguments[2] ? arguments[2] : fn
-            var el = this.el;
-            var index = this.fnName.indexOf(eve + '&' + fn.name)
-            if (index !== -1) {
-                for (var j = 0; j < el.length; j++) {
-                    removeEvent(el[j], eve, this.fn[index])
+                fn = !(fn instanceof Function) && arguments[2] ? arguments[2] : fn
+                var el = this.el;
+                var index = this.fnName.indexOf(eve + '&' + fn.name)
+                if (index !== -1) {
+                    for (var j = 0; j < el.length; j++) {
+                        removeEvent(el[j], eve, this.fn[index])
+                    }
+                    this.fn.splice(index, 1)
+                    this.fnName.splice(index, 1)
                 }
-                this.fn.splice(index, 1)
-                this.fnName.splice(index, 1)
+                return this
             }
-            return this
-        }
-        // 取消绑定到该元素的事件eve的所有监听事件
+            // 取消绑定到该元素的事件eve的所有监听事件
         onObj.prototype.offEvent = function(eve) {
             var el = this.el;
             var index = 0;
@@ -56,50 +56,76 @@ function $q(selector) {
             return this
         }
         onObj.prototype.fire = function(eve, selector) {
-                var el = self.el
-                var target = [];
-                if (selector) {
-                    var sel = document.querySelectorAll(selector);
-                    // 同样是使用contains来判断，不使用冒泡,ie8不支持forEach，真坑爹
-                    for (var k = 0; k < el.length; k++) {
-                        for (var j = 0; j < sel.length; j++) {
-                            if (el[k].contains(sel[j])) {
-                                target.push(sel[j])
-                            }
+            var el = self.el
+            var target = [];
+            if (selector) {
+                var sel = document.querySelectorAll(selector);
+                // 同样是使用contains来判断，不使用冒泡
+                for (var k = 0; k < el.length; k++) {
+                    for (var j = 0; j < sel.length; j++) {
+                        if (el[k].contains(sel[j])) {
+                            target.push(sel[j])
                         }
                     }
-                } else {
-                    target = el
                 }
-                var evt = document.createEvent("HTMLEvents");
-                evt.initEvent(eve, true, true);
-
-                for (var i = 0; i < target.length; i++) {
-                    target[i].dispatchEvent(evt);
-                }
+            } else {
+                target = el
             }
-            // onObj.prototype. = 
+            var evt = document.createEvent("HTMLEvents");
+            evt.initEvent(eve, true, true);
+
+            for (var i = 0; i < target.length; i++) {
+                target[i].dispatchEvent(evt);
+            }
+        }
+
 
     }
+    var addEvent;
+    var removeEvent;
+    if (window.addEventListener) {
+        // 复写函数，之后再次调用无需进行判定-来自《高性能js》
+        addEvent = function(ele, eve, fn) {
+            ele.addEventListener(eve, fn)
+        }
+        removeEvent = function(ele, eve, fn) {
+            ele.removeEventListener(eve, fn);
+        }
 
-    function addEvent(ele, eve, fn) {
-        if (window.addEventListener) {
-            ele.addEventListener(eve, fn);
-        } else if (window.attachEvent) {
+    } else {
+        addEvent = function(ele, eve, fn) {
             ele.attachEvent("on" + eve, fn);
         }
-        return this;
-    }
-
-    function removeEvent(ele, eve, fn) {
-
-        if (window.addEventListener) {
-            ele.removeEventListener(eve, fn);
-        } else if (window.attachEvent) {
+        removeEvent = function(ele, eve, fn) {
             ele.detachEvent("on" + eve, fn);
         }
-        return this;
+
+
     }
+    // function addEvent(ele, eve, fn) {
+    //     if (window.addEventListener) {
+    //         // 复写函数，之后再次调用无需进行判定-来自《高性能js》
+    //         addEvent = function (ele, eve, fn) {
+    //             ele.addEventListener(eve, fn)
+    //         }
+    //     } else {
+    //         addEvent  = function   (ele, eve, fn) {
+    //             ele.attachEvent("on" + eve, fn);
+    //         }
+    //     }
+    //     return this;
+    // }
+
+
+    // function removeEvent(ele, eve, fn) {
+
+    //     if (window.addEventListener) {
+    //         ele.removeEventListener(eve, fn);
+    //     } else if (window.attachEvent) {
+    //         ele.detachEvent("on" + eve, fn);
+    //     }
+    //     return this;
+    // }
 
     function bindEvent(eve, selector, fn, once) {
 
@@ -129,7 +155,7 @@ function $q(selector) {
                 //黑科技callee
                 if (once) {
                     for (var j = 0; j < el.length; j++) {
-                        el[j].removeEventListener(eve, arguments.callee)
+                        removeEvent(el[j], eve, arguments.callee)
                     }
                     var index = that.fnName.indexOf(fn.name)
                     that.fn.splice(index, 1)
@@ -138,6 +164,7 @@ function $q(selector) {
             }
         })
         for (var j = 0; j < el.length; j++) {
+            console.log(addEvent)
             addEvent(el[j], eve, this.fn[this.fn.length - 1])
         }
 
@@ -160,9 +187,9 @@ function bon() {
 }
 
 $q('body').on('click', 'div', con)
-// console.log(window.$qObj)
-// $q('body').once('click', 'div', bon)
-// console.log(window.$qObj)
-// $q('body').off('click', 'div', bon)
-// $q('body').fire('click', 'div')
-// $q('div').off('click')
+    // console.log(window.$qObj)
+    // $q('body').once('click', 'div', bon)
+    // console.log(window.$qObj)
+    // $q('body').off('click', 'div', bon)
+    // $q('body').fire('click', 'div')
+    // $q('div').off('click')
