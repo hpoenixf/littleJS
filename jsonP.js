@@ -1,4 +1,4 @@
-JsonP(url,data,callback) {
+function JsonP(url,data,callback) {
 	var jsp = document.createElement("script")
 	jsp.type = "text/javascript"
 	var dataStr = ""
@@ -8,3 +8,6 @@ JsonP(url,data,callback) {
 	jsp.src = url+"?callback="+callback+dataStr
 	document.body.appendChild(jsp)
 }
+
+
+
