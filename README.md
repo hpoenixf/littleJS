@@ -5,37 +5,39 @@
 ####存放一些上网找到的或者自己写的js文件
 
 #####ie6,ie7 not support,some use es6
-
+#####正在阅读源码，准备加入lodash和underscore中比较好用的函数
+#$q
 ##Qdelegate
 
-####事件代理类似jquery的on方法。
-####使用形式为$q(selector).on(event[,selector],handle),$q(selector).off(event[,selector],handle)
-####使用兼容性良好的node.contains方法而不是事件冒泡。性能更强
-####兼容ie系列的事件模型
-####目前支持on,off，once，fire，offEvent。
-####严格模式下不支持once
-####fire可以触发事件，执行绑定的函数
-####offEvent解除绑定到该事件的所有函数的绑定
-####
-####$q(selector).el 里以数组的形式存储着获取的元素
-####可以使用匿名函数。
-####如果需要解除匿名函数的绑定，需要以:
-####var a = new onObj(el),a.on(eve,selector,fn)的形式来使用该工具
+#####事件代理类似jquery的on方法。
+#####使用形式为$q(selector).on(event[,selector],handle),$q(selector).off(event[,selector],handle)
+#####使用兼容性良好的node.contains方法而不是事件冒泡。性能更强
+#####兼容ie系列的事件模型
+#####目前支持on,off，once，fire，offEvent。
+#####严格模式下不支持once
+#####fire可以触发事件，执行绑定的函数
+#####offEvent解除绑定到该事件的所有函数的绑定
+#####
+#####$q(selector).el 里以数组的形式存储着获取的元素
+#####可以使用匿名函数。
+#####如果需要解除匿名函数的绑定，需要以:
+#####var a = new onObj(el),a.on(eve,selector,fn)的形式来使用该工具
 
+##JSONp
+#####启用jsonp
+
+##DOMready
+
+#####功能类似jQuery的$(document).ready。
+#####可以在dom树解析完成时执行dom操作的函数，不用等到图片等资源加载再执行。
+
+>参考自司徒正美的博客http://www.cnblogs.com/rubylouvre/p/4536334.html
+
+#tools
 
 ##arrayTool 
 
 关于数组的函数集合，目前有数组唯一化的函数
-
-
-
-##DOMready
-
-功能类似jQuery的$(document).ready。
-可以在dom树解析完成时执行dom操作的函数，不用等到图片等资源加载再执行。
-
->参考自司徒正美的博客http://www.cnblogs.com/rubylouvre/p/4536334.html
-
 
 
 ##ChineseSort
