@@ -109,3 +109,39 @@ function once(func) {
         return memo = func.apply(this, arguments);
     };
 };
+
+
+// 函数第n次开始就不能执行，返回undefined..感觉好奇怪lodash作者的思路
+function before(n, func) {
+  var result;
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  return function() {
+    if (--n > 0) {
+     return result = func.apply(this, arguments);
+    }
+    if (n <= 1) {
+      func = undefined;
+    }
+    return result;
+  };
+}
+
+// 照搬至上面的before，函数最多可以执行n次
+function doTimes(func,n) {
+  var result;
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  return function() {
+    if (--n > 0) {
+     return result = func.apply(this, arguments);
+    }
+    if (n <= 0) {
+      func = undefined;
+    }
+    return result;
+  };
+}
+
