@@ -12,6 +12,7 @@
 #####事件代理类似jquery的on方法。
 #####使用形式为$q(selector).on(event[,selector],handle),$q(selector).off(event[,selector],handle)
 #####使用兼容性良好的node.contains方法而不是事件冒泡。性能更强
+#####跟传统的事件代理区别是，触发事件的将会是dom树上第一个被匹配到的符合条件的元素，而不是距离事件目标最近的符合条件的父元素
 #####兼容ie系列的事件模型
 #####目前支持on,off，once，fire，offEvent。
 #####严格模式下不支持once
