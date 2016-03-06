@@ -32,9 +32,9 @@ function $q(selector) {
             target = e.target || e.srcElement
             for (var i = 0; i < els.length; i++) {
                 var _el = els[i]
-                // 使用node.contains来判断是否父子元素的关系。兼容ie系列浏览器，性能优良
-                // 跟传递的事件代理区别是，触发事件的是dom树上第一个被匹配到的符合条件的元素
-                // 而不是距离事件目标最近的元素
+                    // 使用node.contains来判断是否父子元素的关系。兼容ie系列浏览器，性能优良
+                    // 跟传递的事件代理区别是，触发事件的是dom树上第一个被匹配到的符合条件的元素
+                    // 而不是距离事件目标最近的元素
                 if (_el === target || _el.contains(target)) {
                     matched = _el;
                     break;
@@ -56,7 +56,8 @@ function $q(selector) {
         for (var j = 0; j < el.length; j++) {
             $qEv.addEvent(el[j], eve, this.fn[this.fn.length - 1])
         }
-    }
+    };
+
     if (window.addEventListener) {
         $qEv.addEvent = function(ele, eve, fn) {
             ele.addEventListener(eve, fn)
@@ -101,9 +102,26 @@ function onObj(el) {
 
 onObj.prototype = {
     constructor: onObj,
-
     on: function() {
         window.$qEv.bindEvent.apply(this, arguments)
+        return this
+    },
+    click: function() {
+        var arg = [].slice.call(arguments)
+        arg.unshift('click')
+        window.$qEv.bindEvent.apply(this, arg)
+        return this
+    },
+    mouseover: function() {
+        var arg = [].slice.call(arguments)
+        arg.unshift('mouseover')
+        window.$qEv.bindEvent.apply(this, arg)
+        return this
+    },
+    dblclick: function() {
+        var arg = [].slice.call(arguments)
+        arg.unshift('dblclick')
+        window.$qEv.bindEvent.apply(this, arg)
         return this
     },
     once: function() {
@@ -188,7 +206,7 @@ function bon() {
 }
 
 $q('body').on('click', 'div', con)
-// $q('body').fireAll('.cell')
+    // $q('body').fireAll('.cell')
     // console.log(window.$qObj)
     // $q('body').once('click', 'div', bon)
     // $q('body').off('click', 'div', bon)
