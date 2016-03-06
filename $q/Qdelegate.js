@@ -25,7 +25,8 @@ function $q(selector) {
             els = document.querySelectorAll(selector)
         }
         var matched;
-        this.fnName.push(eve + '&' + fn.name)
+        selector=selector||"";
+        this.fnName.push(eve + '&' +selector+'&'+ fn.name)
         var that = this
         this.fn.push(function(event) {
             e = event || window.event
@@ -47,7 +48,8 @@ function $q(selector) {
                     for (var j = 0; j < el.length; j++) {
                         $qEv.removeEvent(el[j], eve, arguments.callee)
                     }
-                    var index = that.fnName.indexOf(fn.name)
+                    var index = that.fnName.indexOf(eve + '&' +selector+'&'+ fn.name)
+                    console.log(index)
                     that.fn.splice(index, 1)
                     that.fnName.splice(index, 1)
                 }
@@ -130,10 +132,11 @@ onObj.prototype = {
         window.$qEv.bindEvent.apply(this, arg)
         return this
     },
-    off: function(eve, fn) {
+    off: function(eve, selector,fn) {
         fn = !(fn instanceof Function) && arguments[2] ? arguments[2] : fn
         var el = this.el;
-        var index = this.fnName.indexOf(eve + '&' + fn.name)
+        selector=selector||''
+        var index = this.fnName.indexOf(eve + '&' +selector+'&'+ fn.name)
         if (index !== -1) {
             for (var j = 0; j < el.length; j++) {
                 window.$qEv.removeEvent(el[j], eve, this.fn[index])
