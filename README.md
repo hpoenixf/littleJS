@@ -79,13 +79,7 @@
 
 
 
-##nodeMail
-#####项目需要，使用nodejs发送邮件，对nodemailer模块进行了简单的包装
-#####基本上没有什么技术含量
 
-##mynodesql
-
-自己写的关于mysql和nodejs交互的工具，免去拼sql的痛苦。
 
 
 
