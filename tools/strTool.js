@@ -40,3 +40,17 @@ var classifyRE = /(?:^|[-_\/])(\w)/g
 export function classify (str) {
   return str.replace(classifyRE, toUpper)
 }
+
+
+
+//限制输入框输入最大值
+
+function lengthLimit(selector,limit) {
+  [].slice.call(document.querySelectorAll(selector)).forEach(function(i){
+    i.addEventListener('change',function(){
+      if(i.value.length>limit) {
+        i.value=i.value.substr(0,limit)
+      }
+    })
+  })
+}
